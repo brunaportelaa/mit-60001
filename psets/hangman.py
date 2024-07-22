@@ -132,16 +132,21 @@ def hangman(secret_word):
     '''
 
     num_guesses = 6
+    user_warnings = 3
     letters_guessed = []
+    num_letters = len(secret_word)
+    print('The word contains', num_letters, 'letters')
 
     while num_guesses > 0 and not is_word_guessed(secret_word, letters_guessed):
-        num_letters = len(secret_word)
         letters_guessed = []
-        print('You have', num_guesses, 'guesses and the word contains', num_letters)
+        print('You have', user_warnings, 'warnings left')
+        print('You have', num_guesses, 'guesses')
         print('Available letters: ', ''.join(get_available_letters(letters_guessed)))
-        user_input = input('Please, guess a letter: ')
-        if user_input not in string.ascii_lowercase:
-            print('Invalid input. Please insert a lowercase letter.')
+        user_input = input('Please, guess a letter: ').lower()
+        print(user_input)
+        if user_input not in string.ascii_letters and user_warnings > 0:
+            user_warnings -= 1
+            print('Invalid input. Please insert a letter.')
             num_guesses += 1
         num_guesses -= 1
 
