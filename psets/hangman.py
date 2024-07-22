@@ -21,14 +21,14 @@ def load_words():
     Depending on the size of the word list, this function may
     take a while to finish.
     """
-    print("Loading word list from file...")
+    #print("Loading word list from file...")
     # inFile: file
     inFile = open(WORDLIST_FILENAME, 'r')
     # line: string
     line = inFile.readline()
     # wordlist: list of strings
     wordlist = line.split()
-    print("  ", len(wordlist), "words loaded.")
+    #print("  ", len(wordlist), "words loaded.")
     return wordlist
 
 
@@ -60,9 +60,17 @@ def is_word_guessed(secret_word, letters_guessed):
       False otherwise
     '''
     # FILL IN YOUR CODE HERE AND DELETE "pass"
-    pass
-
-
+    secret_word_letters = []
+    for letter in secret_word:
+        secret_word_letters.append(letter)
+    secret_word_letters.sort()
+    letters_guessed.sort()
+    #print(secret_word_letters)
+    #print(letters_guessed)
+    if secret_word_letters == letters_guessed:
+        return True
+    else:
+        return False
 
 def get_guessed_word(secret_word, letters_guessed):
     '''
@@ -71,10 +79,16 @@ def get_guessed_word(secret_word, letters_guessed):
     returns: string, comprised of letters, underscores (_), and spaces that represents
       which letters in secret_word have been guessed so far.
     '''
-    # FILL IN YOUR CODE HERE AND DELETE "pass"
-    pass
 
+    result = ['_ ' for l in secret_word]
+    print(result)
 
+    for index, letter in enumerate(secret_word):
+        if letter in letters_guessed:
+            result[index] = letter
+            print(result)
+    print(''.join(result))
+    return result
 
 def get_available_letters(letters_guessed):
     '''
@@ -82,9 +96,13 @@ def get_available_letters(letters_guessed):
     returns: string (of letters), comprised of letters that represents which letters have not
       yet been guessed.
     '''
-    # FILL IN YOUR CODE HERE AND DELETE "pass"
-    pass
-    
+
+    letters = []
+    for l in string.ascii_lowercase:
+        letters.append(l)
+    for l in letters_guessed:
+        letters.remove(l)
+    return letters
     
 
 def hangman(secret_word):
@@ -112,8 +130,25 @@ def hangman(secret_word):
     
     Follows the other limitations detailed in the problem write-up.
     '''
-    # FILL IN YOUR CODE HERE AND DELETE "pass"
-    pass
+
+    num_guesses = 6
+    letters_guessed = []
+
+    while num_guesses > 0 and not is_word_guessed(secret_word, letters_guessed):
+        num_letters = len(secret_word)
+        letters_guessed = []
+        print('You have', num_guesses, 'guesses and the word contains', num_letters)
+        print('Available letters: ', ''.join(get_available_letters(letters_guessed)))
+        user_input = input('Please, guess a letter: ')
+        if user_input not in string.ascii_lowercase:
+            print('Invalid input. Please insert a lowercase letter.')
+            num_guesses += 1
+        num_guesses -= 1
+
+#don't forget to implement the user input requirements later
+secret_word = 'putchuca'
+hangman(secret_word)
+
 
 
 
@@ -195,13 +230,13 @@ def hangman_with_hints(secret_word):
 
 
 if __name__ == "__main__":
-    # pass
+    pass
 
     # To test part 2, comment out the pass line above and
     # uncomment the following two lines.
     
-    secret_word = choose_word(wordlist)
-    hangman(secret_word)
+    #secret_word = choose_word(wordlist)
+    #hangman(secret_word)
 
 ###############
     
