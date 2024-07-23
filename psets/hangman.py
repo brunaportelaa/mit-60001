@@ -59,7 +59,6 @@ def is_word_guessed(secret_word, letters_guessed):
     returns: boolean, True if all the letters of secret_word are in letters_guessed;
       False otherwise
     '''
-    # FILL IN YOUR CODE HERE AND DELETE "pass"
     secret_word_letters = []
     for letter in secret_word:
         secret_word_letters.append(letter)
@@ -81,14 +80,15 @@ def get_guessed_word(secret_word, letters_guessed):
     '''
 
     result = ['_ ' for l in secret_word]
-    print(result)
+    is_correct = False
 
     for index, letter in enumerate(secret_word):
         if letter in letters_guessed:
             result[index] = letter
-            print(result)
+            print('Great! You guessed a letter in the secret word.')
+            is_correct = True
     print(''.join(result))
-    return result
+    return result, is_correct
 
 def get_available_letters(letters_guessed):
     '''
@@ -97,12 +97,16 @@ def get_available_letters(letters_guessed):
       yet been guessed.
     '''
 
-    letters = []
-    for l in string.ascii_lowercase:
-        letters.append(l)
-    for l in letters_guessed:
-        letters.remove(l)
+    letters = [l for l in string.ascii_lowercase if l not in letters_guessed]
     return letters
+
+def get_num_unique_letters(secret_word):
+    result = []
+    for l in secret_word:
+        if l not in result:
+            result.append(l)
+    return len(result)
+
     
 
 def hangman(secret_word):
@@ -135,25 +139,50 @@ def hangman(secret_word):
     user_warnings = 3
     letters_guessed = []
     num_letters = len(secret_word)
+    vowels = ['a', 'e', 'i', 'o', 'u']
     print('The word contains', num_letters, 'letters')
 
     while num_guesses > 0 and not is_word_guessed(secret_word, letters_guessed):
-        letters_guessed = []
         print('You have', user_warnings, 'warnings left')
         print('You have', num_guesses, 'guesses')
         print('Available letters: ', ''.join(get_available_letters(letters_guessed)))
         user_input = input('Please, guess a letter: ').lower()
-        print(user_input)
+
+        #User Input Validation
         if user_input not in string.ascii_letters and user_warnings > 0:
             user_warnings -= 1
             print('Invalid input. Please insert a letter.')
             num_guesses += 1
+
+        #Check if letter is in the secret word
+        if user_input not in letters_guessed:
+            letters_guessed.append(user_input)
+            guessed_word, isCorrect = get_guessed_word(secret_word, letters_guessed)
+            print(isCorrect)
+            if isCorrect == True:
+                num_guesses += 1
+            else:
+                print('That was a bad guess and you lose a guess. Try again!')
+                if user_input in vowels:
+                    num_guesses -= 1
+        else:
+            print('You have already guessed that letter!')
+            if user_warnings > 0:
+                user_warnings -= 1
+                num_guesses += 1
+
+        print('Letters guessed so far:', letters_guessed)
         num_guesses -= 1
 
-#don't forget to implement the user input requirements later
+    #Check if user won
+    if is_word_guessed(secret_word, letters_guessed):
+        score = num_guesses * get_num_unique_letters(secret_word)
+    else:
+        print('Sorry, you ran out of guesses. You lose :(')
+
+
 secret_word = 'putchuca'
 hangman(secret_word)
-
 
 
 
