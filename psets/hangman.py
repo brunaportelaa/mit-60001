@@ -140,25 +140,26 @@ def hangman(secret_word):
     letters_guessed = []
     num_letters = len(secret_word)
     vowels = ['a', 'e', 'i', 'o', 'u']
-    print('The word contains', num_letters, 'letters')
+    print('Welcome to the game Hangman!')
+    print('I am thinking of aword that is', num_letters, 'letters long.')
+    print('You have', user_warnings, 'warnings left')
+    print('___________________________')
 
     while num_guesses > 0 and not is_word_guessed(secret_word, letters_guessed):
-        print('You have', user_warnings, 'warnings left')
-        print('You have', num_guesses, 'guesses')
+        print('You have', num_guesses, 'guesses left')
         print('Available letters: ', ''.join(get_available_letters(letters_guessed)))
         user_input = input('Please, guess a letter: ').lower()
+        guessed_word, isCorrect = get_guessed_word(secret_word, letters_guessed)
 
         #User Input Validation
         if user_input not in string.ascii_letters and user_warnings > 0:
             user_warnings -= 1
-            print('Invalid input. Please insert a letter.')
+            print('Oops! That is not a valid letter. You have', user_warnings, 'warnings left: ', ''.join(guessed_word))
             num_guesses += 1
 
         #Check if letter is in the secret word
         if user_input not in letters_guessed:
             letters_guessed.append(user_input)
-            guessed_word, isCorrect = get_guessed_word(secret_word, letters_guessed)
-            print(isCorrect)
             if isCorrect == True:
                 num_guesses += 1
             else:
