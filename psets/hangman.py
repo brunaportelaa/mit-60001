@@ -211,14 +211,18 @@ def match_with_gaps(my_word, other_word):
     word1 = {}
     word2 = {}
     for index, letter in enumerate(my_word):
-        word1.update({index:letter})
+        word1.update({index: letter})
     print(word1)
     for index, letter in enumerate(other_word):
         word2.update({index: letter})
-    print(word2)
+        print(word2)
+        if word1[index] != word2[index] and word1[index] != '_':
+            return False
+    return True
 
 
-match_with_gaps('putchuca', 'athena')
+
+print(match_with_gaps('p__chu_a', 'pitchulo'))
 
 
 
