@@ -14,6 +14,7 @@ import string
 
 WORDLIST_FILENAME = "words.txt"
 
+
 def load_words():
     """
     Returns a list of valid words. Words are strings of lowercase letters.
@@ -21,7 +22,7 @@ def load_words():
     Depending on the size of the word list, this function may
     take a while to finish.
     """
-    #print("Loading word list from file...")
+    # print("Loading word list from file...")
     # inFile: file
     inFile = open(WORDLIST_FILENAME, 'r')
     # line: string
@@ -72,7 +73,7 @@ def get_guessed_word(secret_word, letters_guessed):
       which letters in secret_word have been guessed so far.
     '''
 
-    result = ['_ ' for l in secret_word]
+    result = ['_' for l in secret_word]
     for index, letter in enumerate(secret_word):
         if letter in letters_guessed:
             result[index] = letter
@@ -91,7 +92,7 @@ def get_available_letters(letters_guessed):
 
 def get_num_unique_letters(secret_word):
     '''
-    :param secret_word
+    :param: secret_word
     :return: number of unique letters in the secret word
     '''
     result = []
@@ -197,8 +198,6 @@ def hangman(secret_word):
 
 # -----------------------------------
 
-
-
 def match_with_gaps(my_word, other_word):
     '''
     my_word: string with _ characters, current guess of secret word
@@ -208,23 +207,21 @@ def match_with_gaps(my_word, other_word):
         _ , and my_word and other_word are of the same length;
         False otherwise: 
     '''
-    word1 = {}
-    word2 = {}
+    if len(my_word) != len(other_word):
+        return False
+
     for index, letter in enumerate(my_word):
-        word1.update({index: letter})
-    print(word1)
-    for index, letter in enumerate(other_word):
-        word2.update({index: letter})
-        print(word2)
-        if word1[index] != word2[index] and word1[index] != '_':
+        if my_word[index] == other_word[index] or my_word[index] == "_":
+            continue
+        else:
             return False
     return True
 
 
 
-print(match_with_gaps('p__chu_a', 'pitchulo'))
-
-
+def wordlist_filtered_by_len(secret_word):
+    filtered_wordlist = [word for word in wordlist if len(word) == len(secret_word)]
+    return filtered_wordlist
 
 def show_possible_matches(my_word):
     '''
@@ -236,9 +233,15 @@ def show_possible_matches(my_word):
              that has already been revealed.
 
     '''
-    # FILL IN YOUR CODE HERE AND DELETE "pass"
-    pass
-
+    result = []
+    word = my_word.strip(' ')
+    print('my word is:', word, 'and has a length of', len(word))
+    wordlist = wordlist_filtered_by_len(my_word)
+    for word in wordlist:
+        if match_with_gaps(my_word, word) == True:
+            print('Word match')
+            result.append(word)
+    return result
 
 
 def hangman_with_hints(secret_word):
@@ -268,8 +271,65 @@ def hangman_with_hints(secret_word):
     
     Follows the other limitations detailed in the problem write-up.
     '''
-    # FILL IN YOUR CODE HERE AND DELETE "pass"
-    pass
+    num_guesses = 6
+    user_warnings = 3
+    letters_guessed = []
+    num_letters = len(secret_word)
+    vowels = ['a', 'e', 'i', 'o', 'u']
+    print('Welcome to the game Hangman!')
+    print('I am thinking of a word that is', num_letters, 'letters long.')
+    print('You have', user_warnings, 'warnings left')
+    #print(secret_word)
+    print('___________________________')
+
+    while num_guesses > 0 and not is_word_guessed(secret_word, letters_guessed):
+        print('You have', num_guesses, 'guesses left')
+        print('Available letters: ', get_available_letters(letters_guessed))
+        user_input = input('Please, guess a letter: ').lower()
+        guessed_word = get_guessed_word(secret_word, letters_guessed)
+        print(guessed_word)
+
+        if user_input == '*':
+            print(show_possible_matches(guessed_word))
+            num_guesses += 1
+
+        # User Input Validation
+        elif user_input not in string.ascii_letters and user_warnings > 0:
+            user_warnings -= 1
+            print('Oops! That is not a valid letter. You have', user_warnings, 'warnings left: ', ''.join(guessed_word))
+            num_guesses += 1
+
+        # Check if letter is in the secret word
+        elif user_input in letters_guessed and user_warnings > 0:
+            user_warnings -= 1
+            print("Oops! You've already guessed that letter. You have:", user_warnings, "warnings left.")
+            num_guesses += 1
+
+        # Check if letter is in the word.
+        elif user_input in secret_word:
+            letters_guessed.append(user_input)
+            print('Good guess!: ', get_guessed_word(secret_word, letters_guessed))
+            num_guesses += 1
+
+        else:
+            letters_guessed.append(user_input)
+            print("Oops! That letter is not in my word.")
+            print("Please guess a letter:", get_guessed_word(secret_word, letters_guessed))
+            if user_input in vowels:
+                num_guesses -= 1
+
+        num_guesses -= 1
+        print("---------------------------")
+
+    # Check if user won
+    if is_word_guessed(secret_word, letters_guessed):
+        score = num_guesses * get_num_unique_letters(secret_word)
+        print('Congratulations, you won!')
+        print('Your total score for this game is: ', score)
+        return
+    else:
+        print('Sorry, you ran out of guesses. You lose :(')
+        print('The word was: ', secret_word)
 
 
 
@@ -280,7 +340,7 @@ def hangman_with_hints(secret_word):
 
 
 if __name__ == "__main__":
-    pass
+    #pass
 
     # To test part 2, comment out the pass line above and
     # uncomment the following two lines.
@@ -293,5 +353,5 @@ if __name__ == "__main__":
     # To test part 3 re-comment out the above lines and 
     # uncomment the following two lines. 
     
-    #secret_word = choose_word(wordlist)
-    #hangman_with_hints(secret_word)
+    secret_word = choose_word(wordlist)
+    hangman_with_hints(secret_word)
